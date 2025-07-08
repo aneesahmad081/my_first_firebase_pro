@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_first_firebase_pro/UI/aut/signup_screen.dart';
+import 'package:my_first_firebase_pro/UI/posts/post_screen.dart';
+import 'package:my_first_firebase_pro/UI/util/toast_utils.dart';
 import 'package:my_first_firebase_pro/UI/widgets/round_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final aut = FirebaseAuth.instance;
+  bool loading = false;
 
   @override
   void dispose() {
@@ -86,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Enter Password',
-                        prefixIcon: const Icon(Icons.password),
+                        prefixIcon: const Icon(Icons.lock),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -124,23 +129,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
               RoundButton(
                 title: 'Login',
+                loading: loading,
                 onTap: () async {
                   if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      loading = true;
+                    });
+
                     final email = emailController.text.trim();
                     final password = passwordController.text.trim();
 
                     try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      await aut.signInWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Login Successful')),
-                      );
+                      ToastUtils.show('Login Successful');
 
-                      // Navigate to home screen or dashboard
-                      // Navigator.pushReplacement(...);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PostScreen()),
+                      );
                     } on FirebaseAuthException catch (e) {
                       String errorMessage = 'Login failed';
                       if (e.code == 'user-not-found') {
@@ -149,18 +159,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         errorMessage = 'Wrong password.';
                       }
 
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+                      ToastUtils.show(errorMessage);
+                    } finally {
+                      setState(() {
+                        loading = false;
+                      });
                     }
                   }
                 },
               ),
 
+              const SizedBox(height: 20),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account? "),
+                  const Text("Don't have an account? "),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -168,7 +182,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => SignupScreen()),
                       );
                     },
-                    child: Text('Sign Up', style: TextStyle(color: Colors.red)),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   ),
                 ],
               ),

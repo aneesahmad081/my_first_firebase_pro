@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_first_firebase_pro/UI/aut/login_screen.dart';
+import 'package:my_first_firebase_pro/UI/util/toast_utils.dart';
 import 'package:my_first_firebase_pro/UI/widgets/round_button.dart';
+import '';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -11,10 +13,13 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  bool lodaing = false;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  FirebaseAuth aut = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -154,8 +159,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
             RoundButton(
               title: 'Sign Up',
+              loading: lodaing,
               onTap: () async {
                 if (_formKey.currentState!.validate()) {
+                  setState(() {
+                    lodaing = true;
+                  });
+
                   final name = nameController.text.trim();
                   final email = emailController.text.trim();
                   final password = passwordController.text.trim();
@@ -166,11 +176,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       password: password,
                     );
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Account Created Successfully'),
-                      ),
-                    );
+                    ToastUtils.show('Account Created Successfully');
 
                     Navigator.pop(context);
                   } on FirebaseAuthException catch (e) {
@@ -181,9 +187,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       errorMessage = 'Password should be at least 8 characters';
                     }
 
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(errorMessage)));
+                    ToastUtils.show(errorMessage);
+                  } finally {
+                    setState(() {
+                      lodaing = false;
+                    });
                   }
                 }
               },
