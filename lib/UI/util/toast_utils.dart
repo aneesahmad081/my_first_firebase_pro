@@ -12,4 +12,6 @@ class ToastUtils {
       fontSize: 16.0,
     );
   }
+
+  void toastMessage(String s) {}
 }
