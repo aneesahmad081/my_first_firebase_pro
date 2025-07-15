@@ -60,30 +60,30 @@ class _AddpostScreenState extends State<AddpostScreen> {
             RoundButton(
               title: 'Add',
               loading: loading,
-              onTap: () {
-                setState(() {
-                  loading = true;
-                });
+              onTap: () async {
+                final title = postController.text.trim();
+                if (title.isEmpty) {
+                  ToastUtils.show('Post content cannot be empty');
+                  return;
+                }
 
-                // Use current time for unique ID instead of hardcoded '1'
+                setState(() => loading = true);
+
                 String id = DateTime.now().millisecondsSinceEpoch.toString();
 
-                databaseRef
+                await FirebaseDatabase.instance
+                    .ref('post')
                     .child(id)
-                    .set({'title': postController.text.toString(), 'id': id})
-                    .then((_) {
-                      ToastUtils.show('Post Added'); // Correct method call
-                      setState(() {
-                        loading = false;
-                      });
-                      postController.clear(); // Optional: clear after post
+                    .set({'id': id, 'title': title})
+                    .then((value) {
+                      ToastUtils.show('Post added successfully');
+                      Navigator.pop(context);
                     })
                     .catchError((error) {
-                      ToastUtils.show(error.toString());
-                      setState(() {
-                        loading = false;
-                      });
+                      ToastUtils.show('Failed to add post: $error');
                     });
+
+                setState(() => loading = false);
               },
             ),
           ],
