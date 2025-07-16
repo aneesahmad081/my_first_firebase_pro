@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:my_first_firebase_pro/UI/aut/login_screen.dart';
 import 'package:my_first_firebase_pro/UI/util/toast_utils.dart';
 import 'package:my_first_firebase_pro/UI/widgets/round_button.dart';
-import '';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
