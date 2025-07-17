@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_first_firebase_pro/UI/aut/login_screen.dart';
 import 'package:my_first_firebase_pro/UI/posts/addpost_screen.dart';
@@ -145,7 +146,7 @@ class _PostScreenState extends State<PostScreen> {
                               child: ListTile(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  showMyDialog();
+                                  showMyDialog(title, id);
                                 },
                                 leading: Icon(Icons.edit),
                                 title: Text('Edit'),
@@ -217,7 +218,8 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
-  Future<void> showMyDialog() async {
+  Future<void> showMyDialog(String title, String id) async {
+    editController.text = title;
     return showDialog(
       context: context,
       builder: (context) {
@@ -239,6 +241,13 @@ class _PostScreenState extends State<PostScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
+                ref.child(id).update({
+                  'title':editController.text.toLowerCase()
+                }).then((value){
+                   
+                }).onError((error, StackFilter){
+                  ToastUtils()
+                })
               },
               child: Text('Update'),
             ),
