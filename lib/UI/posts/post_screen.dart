@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_first_firebase_pro/UI/aut/login_screen.dart';
 import 'package:my_first_firebase_pro/UI/posts/addpost_screen.dart';
@@ -155,6 +154,22 @@ class _PostScreenState extends State<PostScreen> {
                             PopupMenuItem(
                               value: 2,
                               child: ListTile(
+                                onTap: () {
+                                  Navigator.pop(context); // to close the popup
+                                  ref
+                                      .child(id.toString())
+                                      .remove()
+                                      .then((value) {
+                                        ToastUtils().toastMessage(
+                                          'Post Deleted',
+                                        );
+                                      })
+                                      .onError((error, stackTrace) {
+                                        ToastUtils().toastMessage(
+                                          error.toString(),
+                                        );
+                                      });
+                                },
                                 leading: Icon(Icons.delete),
                                 title: Text('Delete'),
                               ),
@@ -241,13 +256,15 @@ class _PostScreenState extends State<PostScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                ref.child(id).update({
-                  'title':editController.text.toLowerCase()
-                }).then((value){
-                   
-                }).onError((error, StackFilter){
-                  ToastUtils()
-                })
+                ref
+                    .child(id)
+                    .update({'title': editController.text.toLowerCase()})
+                    .then((value) {
+                      ToastUtils().toastMessage('Post Update');
+                    })
+                    .onError((error, stackFilter) {
+                      ToastUtils().toastMessage(error.toString());
+                    });
               },
               child: Text('Update'),
             ),
