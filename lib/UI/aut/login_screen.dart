@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_first_firebase_pro/UI/aut/login_with_phone_number.dart';
 import 'package:my_first_firebase_pro/UI/aut/signup_screen.dart';
+import 'package:my_first_firebase_pro/UI/forgot_password.dart';
 import 'package:my_first_firebase_pro/UI/posts/post_screen.dart';
+import 'package:my_first_firebase_pro/UI/posts/upload_image.dart';
 import 'package:my_first_firebase_pro/UI/util/toast_utils.dart';
 import 'package:my_first_firebase_pro/UI/widgets/round_button.dart';
 
@@ -150,7 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => PostScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => UploadImageScreen(),
+                        ),
                       );
                     } on FirebaseAuthException catch (e) {
                       String errorMessage = 'Login failed';
@@ -168,6 +172,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   }
                 },
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgotPassword()),
+                    );
+                  },
+                  child: const Text(
+                    'Forgot Password ?',
+                    style: TextStyle(
+                      color: Colors.teal,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),
